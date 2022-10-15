@@ -8,12 +8,13 @@ body {
     border: solid;
     border-radius: 10px;
     border-color: #90e0ef;
-    padding: 5px;
+    padding: 6px;
     font: 24px/36px sans-serif;
     width: 250px;
-    min-height: 100px;
+    min-height: 50px;
     overflow: hidden;
     overflow: scroll;
+    background-color: #EAEDED;
     }
     
     /* Scrollbar styles */
@@ -60,16 +61,16 @@ h2 {
 }
 
 li {
-  font-size: 16px;
+  font-size: 12px;
   border: solid;
   border-width: 1px;
   border-color: #8C92AC;
-  border-left: none;
   border-right: none;
+  border-left: none;
   border-top: none;
-  text-align: center;
-  width: 248px;
-  right: 45px;
+  text-align: justify;
+  width: 244px;
+  right: 40px;
   bottom: 28px;
   position: relative;
 }
@@ -120,7 +121,13 @@ li {
     height: 10px;
   }
 
-  .listBtn {
+  .editBtn {
     position: relative;
     left: 10px;
+  }
+
+  .linkBtn {
+    position: relative;
+    left: 62px;
+    bottom: 36px;
   }

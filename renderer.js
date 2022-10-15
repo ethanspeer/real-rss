@@ -16,7 +16,6 @@ const rssURL = document.getElementById('rssurl');
 var feedLinks = document.getElementById('feedlinks');
 var span = document.getElementsByClassName("close")[0];
 addFeedBtn.addEventListener('click', () => {
-    console.log("called")
     addFeedModal.style.display = "block";
 });
 
@@ -43,9 +42,9 @@ function initialize() {
   if (localStorage["feedList"]) {
     feedLinks.innerHTML = localStorage["feedList"];
     console.log(feedLinks.innerHTML);
-    var buttons = document.getElementsByClassName("listBtn");
-    for(var i = 0; i < buttons.length; i++) {
-      buttons[i].addEventListener("click", editFeed);
+    var edit_buttons = document.getElementsByClassName("editBtn");
+    for(var i = 0; i < edit_buttons.length; i++) {
+        edit_buttons[i].addEventListener("click", editFeed);
     }
   }
 }
@@ -54,17 +53,33 @@ function addFeed () {
   var feedName = document.getElementById("rssname").value;
   var feedText = document.createTextNode(feedName);
   var li = document.createElement("li");
-  li.setAttribute("text-align", "center");
-  var btn = document.createElement("button");
-  btn.setAttribute("class", "listBtn");
-  btn.addEventListener("click", editFeed);
+  var editBtn = document.createElement("button");
+  var form = document.createElement("form");
+  var linkBtn = document.createElement("button");
   var icon = document.createElement("img");
+  var icon_link = document.createElement("img");
+
+
+  li.setAttribute("text-align", "center");
+  editBtn.setAttribute("class", "editBtn");
+  editBtn.addEventListener("click", editFeed);
+  linkBtn.setAttribute("class", "linkBtn");
+  linkBtn.setAttribute("type", "submit");
+  form.setAttribute("action", rssURL.value);
+  form.setAttribute("method", "get");
+  form.setAttribute("target", "_blank");
   icon.setAttribute("src", "./images/edit.png");
   icon.setAttribute("class", "edit");
-  btn.appendChild(icon);
+  icon_link.setAttribute("src", "./images/link.png");
+  icon_link.setAttribute("class", "edit");
+  editBtn.appendChild(icon);
+  linkBtn.appendChild(icon_link);
+  form.appendChild(linkBtn);
   li.appendChild(feedText);
-  li.appendChild(btn);
+  li.appendChild(editBtn);
+  li.appendChild(form);
   feedLinks.appendChild(li);
+
   localStorage["feedList"] = feedLinks.innerHTML
   rssName.value = "";
   rssURL.value = "";
@@ -72,7 +87,6 @@ function addFeed () {
 
 function editFeed() {
   console.log("edit");
-  
 }
 
 window.onload = initialize;
