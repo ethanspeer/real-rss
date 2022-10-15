@@ -10,19 +10,39 @@ const func = async () => {
 
 const addFeedBtn = document.getElementById('addFeedBtn');
 const addFeedModal = document.getElementById('addFeedModal');
+const addLinkBtn = document.getElementById('addlinkbtn');
+const rssName = document.getElementById('rssname');
+const rssURL = document.getElementById('rssurl');
+var feedLinks = document.getElementById('feedlinks');
 var span = document.getElementsByClassName("close")[0];
 addFeedBtn.addEventListener('click', () => {
     console.log("called")
     addFeedModal.style.display = "block";
 });
 
+addLinkBtn.addEventListener('click', () => {
+  console.log("should add")
+  console.log(rssURL.value)
+
+  var feedLink = document.createElement("li");
+  feedLink.appendChild(document.createTextNode(rssName.value + "\n"));
+  feedLinks.appendChild(feedLink);
+  rssName.value = "";
+  rssURL.value = "";
+  hideModal();
+});
+
 span.addEventListener('click', () => {
-    addFeedModal.style.display = "none";
+    hideModal();
 });
 
 window.onclick = function(event) {
     if (event.target == addFeedModal) {
-     addFeedModal.style.display = "none";
+     hideModal();
     }
   }
+
+function hideModal() {
+  addFeedModal.style.display = "none";
+}
 

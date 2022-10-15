@@ -8,6 +8,7 @@
   </head>
   <body>
     <h1>RealRSS</h1>
+    <hr>
 
 
     <button type="button" id="addFeedBtn">Add Feed</button>
@@ -16,16 +17,24 @@
       <!-- Modal content -->
       <div class="modal-content">
         <span class="close">&times;</span>
-        <p>Sample modal text</p>
+          <label for="rssname">Display Name</label> <br>
+          <input type="text" id="rssname" name="rssname"> <br>
+          <label for="rssurl">URL</label> <br>
+          <input type="text" id="rssurl" name="rssurl"> <br>
+          <button type="button" id="addlinkbtn">Add Link</button>
+        </form>
       </div>
     
     </div>
 
 
     <div class="feedBox">
-      <p>placeholder placeholder placeholder placeholder placeholder placeholder placeholder placeholder
-        placeholder placeholder placeholder placeholder placeholder placeholder placeholder placeholder
-        placeholder placeholder placeholder placeholder placeholder placeholder placeholder placeholder </p>
+      <h2>&nbsp&nbsp&nbsp&nbspFeeds</h2>
+      <ul id="feedlinks" style="list-style: none;">
+        <div class="linklist">
+          <li>placeholder</li>
+        </div>
+      </ul>
     </div>
 
     <p class="right" id="info"></p>
