@@ -51,12 +51,12 @@ h2 {
   padding: 0;
   border: solid;
   border-width: 1px;
+  border-color: #8C92AC;
   border-top: none;
   border-left: none;
   border-right: none;
-  position: relative;
-  right: 4px;
-  margin: 0 -1em;
+  text-align: center;
+  background-color: #AFDCEB;
 }
 
 li {
@@ -113,4 +113,14 @@ li {
 
   .right {
     text-align: right;
+  }
+
+  .edit {
+    width: 10px;
+    height: 10px;
+  }
+
+  .listBtn {
+    position: relative;
+    left: 10px;
   }

@@ -21,14 +21,7 @@ addFeedBtn.addEventListener('click', () => {
 });
 
 addLinkBtn.addEventListener('click', () => {
-  console.log("should add")
-  console.log(rssURL.value)
-
-  var feedLink = document.createElement("li");
-  feedLink.appendChild(document.createTextNode(rssName.value + "\n"));
-  feedLinks.appendChild(feedLink);
-  rssName.value = "";
-  rssURL.value = "";
+  addFeed();
   hideModal();
 });
 
@@ -46,3 +39,40 @@ function hideModal() {
   addFeedModal.style.display = "none";
 }
 
+function initialize() {
+  if (localStorage["feedList"]) {
+    feedLinks.innerHTML = localStorage["feedList"];
+    console.log(feedLinks.innerHTML);
+    var buttons = document.getElementsByClassName("listBtn");
+    for(var i = 0; i < buttons.length; i++) {
+      buttons[i].addEventListener("click", editFeed);
+    }
+  }
+}
+
+function addFeed () {
+  var feedName = document.getElementById("rssname").value;
+  var feedText = document.createTextNode(feedName);
+  var li = document.createElement("li");
+  li.setAttribute("text-align", "center");
+  var btn = document.createElement("button");
+  btn.setAttribute("class", "listBtn");
+  btn.addEventListener("click", editFeed);
+  var icon = document.createElement("img");
+  icon.setAttribute("src", "./images/edit.png");
+  icon.setAttribute("class", "edit");
+  btn.appendChild(icon);
+  li.appendChild(feedText);
+  li.appendChild(btn);
+  feedLinks.appendChild(li);
+  localStorage["feedList"] = feedLinks.innerHTML
+  rssName.value = "";
+  rssURL.value = "";
+}
+
+function editFeed() {
+  console.log("edit");
+  
+}
+
+window.onload = initialize;
