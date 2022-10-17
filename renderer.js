@@ -9,6 +9,7 @@ const func = async () => {
   func()
 
 const addFeedBtn = document.getElementById('addFeedBtn');
+const container = document.getElementById('container');
 const addFeedModal = document.getElementById('addFeedModal');
 const addLinkBtn = document.getElementById('addlinkbtn');
 const rssName = document.getElementById('rssname');
@@ -46,6 +47,10 @@ function initialize() {
     for(var i = 0; i < edit_buttons.length; i++) {
         edit_buttons[i].addEventListener("click", editFeed);
     }
+    var load_buttons = document.getElementsByClassName("loadBtn");
+    for(var j = 0; j < load_buttons.length; j++) {
+        load_buttons[j].addEventListener("click", loadFeed);
+    }
   }
 }
 
@@ -54,8 +59,7 @@ function addFeed () {
   var feedText = document.createTextNode(feedName);
   var li = document.createElement("li");
   var editBtn = document.createElement("button");
-  var form = document.createElement("form");
-  var linkBtn = document.createElement("button");
+  var loadBtn = document.createElement("button");
   var icon = document.createElement("img");
   var icon_link = document.createElement("img");
 
@@ -63,21 +67,22 @@ function addFeed () {
   li.setAttribute("text-align", "center");
   editBtn.setAttribute("class", "editBtn");
   editBtn.addEventListener("click", editFeed);
-  linkBtn.setAttribute("class", "linkBtn");
-  linkBtn.setAttribute("type", "submit");
-  form.setAttribute("action", rssURL.value);
-  form.setAttribute("method", "get");
-  form.setAttribute("target", "_blank");
+  loadBtn.setAttribute("class", "loadBtn");
+  loadBtn.setAttribute("type", "submit");
+  loadBtn.setAttribute("name", rssURL.value);
+  loadBtn.addEventListener("click", loadFeed);
   icon.setAttribute("src", "./images/edit.png");
   icon.setAttribute("class", "edit");
-  icon_link.setAttribute("src", "./images/link.png");
+  icon.setAttribute("unselectable", "on");
+  icon_link.setAttribute("src", "./images/load.png");
   icon_link.setAttribute("class", "edit");
+  icon_link.setAttribute("unselectable", "on");
+
   editBtn.appendChild(icon);
-  linkBtn.appendChild(icon_link);
-  form.appendChild(linkBtn);
+  loadBtn.appendChild(icon_link);
   li.appendChild(feedText);
   li.appendChild(editBtn);
-  li.appendChild(form);
+  li.appendChild(loadBtn);
   feedLinks.appendChild(li);
 
   localStorage["feedList"] = feedLinks.innerHTML
@@ -87,6 +92,30 @@ function addFeed () {
 
 function editFeed() {
   console.log("edit");
+}
+
+function loadFeed(event) {
+  console.log("load");
+  container.innerHTML = "";
+  const load = event.target;
+  console.log(load);
+  const URL = load.name;
+  console.log(URL);
+  fetch(URL)
+    .then(response => response.text())
+    .then(data => parse(data))
+}
+
+function parse(data) {
+  var parser = new DOMParser();
+  xmlDoc = parser.parseFromString(data,"text/xml");
+  const num = xmlDoc.getElementsByTagName("title").length;
+  for(var i = 0; i < num; i++) {
+    const xTitle = xmlDoc.getElementsByTagName("title")[i];
+    var title = document.createElement("p");
+    title.appendChild(xTitle)
+    container.appendChild(title);
+  }
 }
 
 window.onload = initialize;

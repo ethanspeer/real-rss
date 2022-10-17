@@ -1,6 +1,6 @@
 /* styles.css */
 body {
-    margin-bottom: 200%;
+    margin-bottom: 0%;
     }
     
     /* Box styles */
@@ -119,6 +119,7 @@ li {
   .edit {
     width: 10px;
     height: 10px;
+    pointer-events: none;
   }
 
   .editBtn {
@@ -126,8 +127,18 @@ li {
     left: 10px;
   }
 
-  .linkBtn {
+  .loadBtn {
     position: relative;
-    left: 62px;
-    bottom: 36px;
+    left: 15px;
+  }
+
+  .xml-container {
+    width: 880px;
+    border-style: solid;
+    height: 200px;
+    position: relative;
+    left: 320px;
+    bottom: 90px;
+    overflow: hidden;
+    overflow: scroll;
   }
