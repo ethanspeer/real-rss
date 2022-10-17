@@ -11,8 +11,8 @@ const func = async () => {
 const add_feed_button = document.getElementById('add_feed_button');
 const add_feed_modal = document.getElementById('add_feed_modal');
 const add_link_button = document.getElementById('add_link_button');
-const rssName = document.getElementById('rssname');
-const rssURL = document.getElementById('rssurl');
+const rss_name = document.getElementById('rss_name');
+const rss_url = document.getElementById('rss_url');
 var feedLinks = document.getElementById('feedlinks');
 var span = document.getElementsByClassName("close")[0];
 
@@ -62,7 +62,7 @@ function initialize() {
 }
 
 function addFeed () {
-  var feedName = document.getElementById("rssname").value;
+  var feedName = document.getElementById("rss_name").value;
   var feedText = document.createTextNode(feedName);
   var li = document.createElement("li");
   var edit_button = document.createElement("button");
@@ -79,7 +79,7 @@ function addFeed () {
   edit_button.addEventListener("click", editFeed);
   load_button.setAttribute("class", "load_button");
   load_button.setAttribute("title", "Load");
-  load_button.setAttribute("name", rssURL.value);
+  load_button.setAttribute("name", rss_url.value);
   load_button.addEventListener("click", loadFeed);
   delete_button.setAttribute("class", "delete_button");
   delete_button.setAttribute("title", "Delete");
@@ -105,8 +105,8 @@ function addFeed () {
   feedLinks.appendChild(li);
 
   localStorage["feedList"] = feedLinks.innerHTML;
-  rssName.value = "";
-  rssURL.value = "";
+  rss_name.value = "";
+  rss_url.value = "";
 }
 
 function editFeed() {
@@ -117,7 +117,6 @@ function loadFeed(event) {
   console.log("load");
   container.innerHTML = "";
   const load = event.target;
-  console.log(load);
   const URL = load.name;
   console.log(URL);
   fetch(URL)
@@ -126,19 +125,55 @@ function loadFeed(event) {
 }
 
 function parse(data) {
+  console.log(data);
   var parser = new DOMParser();
   xmlDoc = parser.parseFromString(data,"text/xml");
-  const num = xmlDoc.getElementsByTagName("title").length;
-  for(var i = 0; i < num; i++) {
-    const xTitle = xmlDoc.getElementsByTagName("title")[i];
-    var title = document.createElement("p");
-    title.appendChild(xTitle)
-    container.appendChild(title);
+  const num_entries = xmlDoc.getElementsByTagName("item").length;
+  for(var i = 0; i < num_entries; i++) {
+    var divider = document.createElement("div");
+    divider.setAttribute("class", "feed_data")
+    const xItem = xmlDoc.getElementsByTagName("item")[i];
+
+    divider.appendChild(handleItem(xItem));
+    container.appendChild(divider);
+    console.log(container);
   }
 }
 
 function deleteFeed() {
   console.log("delete");
+}
+
+function handleItem(item) {
+  const children = item.childNodes;
+  var sub_divider = document.createElement("div");
+  for(var i = 0; i < children.length; i++) {
+    child = children.item(i)
+    if(child.tagName == "title") {
+      var xTitle = document.createElement("p");
+      xTitle.setAttribute("class", "feed_title");
+      xTitle.innerHTML = child.innerHTML;
+      sub_divider.appendChild(xTitle);
+    } else if(child.tagName == "guid") {
+      var xGuid = document.createElement("a");
+      xGuid.setAttribute("class", "feed_guid");
+      xGuid.setAttribute("target", "_blank");
+      xGuid.setAttribute("href", child.innerHTML);
+      xGuid.innerHTML = child.innerHTML;
+      sub_divider.appendChild(xGuid);
+    } else if(child.tagName == "description") {
+      var xDescription = document.createElement("p");
+      xDescription.setAttribute("class", "feed_description");
+      xDescription.innerHTML = child.innerHTML;
+      sub_divider.appendChild(xDescription);
+    } else if(child.tagName == "pubDate") {
+      var xPubDate = document.createElement("p");
+      xPubDate.setAttribute("class", "feed_pubDate");
+      xPubDate.innerHTML = child.innerHTML;
+      sub_divider.appendChild(xPubDate);
+    }
+  }
+  return sub_divider;
 }
 
 window.onload = initialize;
