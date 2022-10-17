@@ -1,7 +1,66 @@
 /* styles.css */
+
+/* || GENERAL STYLES */
+
 body {
-    margin-bottom: 0%;
-    }
+
+}
+
+h1 {
+  color: #77C3EC;
+  font-size: 2.5rem;
+  font-family: 'Courier New', Courier, monospace;
+}
+  
+h2 {
+  font-size: 1.125rem;
+  color: #23395D;
+  margin: 0;
+  padding: 0;
+  border: solid;
+  border-width: 1px;
+  border-color: #8C92AC;
+  border-top: none;
+  border-left: none;
+  border-right: none;
+  text-align: center;
+  background-color: #AFDCEB;
+}
+  
+li {
+    font-size: 12px;
+    border: solid;
+    border-width: 1px;
+    border-color: #8C92AC;
+    border-right: none;
+    border-left: none;
+    border-top: none;
+    text-align: justify;
+    width: 244px;
+    right: 40px;
+    bottom: 28px;
+    position: relative;
+}
+
+p {
+  font-size: 0.625rem;
+}
+
+/* … */
+
+/* || Typography */
+
+/* … */
+
+/* || Header and Main Navigation */
+
+/* … */
+
+
+
+
+
+
     
     /* Box styles */
     .feedBox {
@@ -37,43 +96,9 @@ body {
     background: #90e0ef;  
     }
 
-p {
-    font-size: 10px;
-}
 
-h1 {
-  color: #77C3EC;
-}
 
-h2 {
-  font-size: 18px;
-  color: #23395D;
-  margin: 0;
-  padding: 0;
-  border: solid;
-  border-width: 1px;
-  border-color: #8C92AC;
-  border-top: none;
-  border-left: none;
-  border-right: none;
-  text-align: center;
-  background-color: #AFDCEB;
-}
 
-li {
-  font-size: 12px;
-  border: solid;
-  border-width: 1px;
-  border-color: #8C92AC;
-  border-right: none;
-  border-left: none;
-  border-top: none;
-  text-align: justify;
-  width: 244px;
-  right: 40px;
-  bottom: 28px;
-  position: relative;
-}
 
 .modal {
     display: none; /* Hidden by default */
@@ -116,20 +141,25 @@ li {
     text-align: right;
   }
 
-  .edit {
+  .feed-button-icon {
     width: 10px;
     height: 10px;
     pointer-events: none;
   }
 
-  .editBtn {
+  .edit_button {
     position: relative;
     left: 10px;
   }
 
-  .loadBtn {
+  .load_button {
     position: relative;
     left: 15px;
+  }
+
+  .delete_button{
+    position: relative;
+    left: 20px;
   }
 
   .xml-container {
@@ -141,4 +171,31 @@ li {
     bottom: 90px;
     overflow: hidden;
     overflow: scroll;
+  }
+
+  #add_feed_button {
+    margin: 0 0 10px 2px;
+  }
+
+  #add_link_button {
+    position: relative;
+    left: 460px;
+  }
+
+  .big_button {
+    background-color: #90e0ef;
+    border-radius: 4px;
+    border-color: #23395D;
+    border-width: 1px;
+    color: #23395D;
+    font-size: 16px;
+    font-weight: bold;
+    width: 140px;
+    height: 30px;
+    cursor: pointer;
+    transition-duration: 0.4s;
+  } 
+  .big_button:hover {
+    background-color: #23395D;
+    color: #90e0ef;
   }
