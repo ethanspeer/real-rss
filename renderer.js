@@ -27,7 +27,7 @@ add_link_button.addEventListener('click', () => {
   hideModal();
 });
 
-for (let i = 0; i < 3; i++) {
+for(let i = 0; i < 3; i++) {
   var close_button = document.getElementsByClassName("close_modal")[i];
   close_button.addEventListener('click', () => {
     hideModal();
@@ -51,15 +51,15 @@ function initialize() {
   if (localStorage["feedList"]) {
     feedLinks.innerHTML = localStorage["feedList"];
     var edit_buttons = document.getElementsByClassName("edit_button");
-    for(var i = 0; i < edit_buttons.length; i++) {
+    for(let i = 0; i < edit_buttons.length; i++) {
         edit_buttons[i].addEventListener("click", editFeed);
     }
     var load_buttons = document.getElementsByClassName("load_button");
-    for(var j = 0; j < load_buttons.length; j++) {
+    for(let j = 0; j < load_buttons.length; j++) {
         load_buttons[j].addEventListener("click", loadFeed);
     }
     var delete_buttons = document.getElementsByClassName("delete_button");
-    for(var k = 0; k < delete_buttons.length; k++) {
+    for(let k = 0; k < delete_buttons.length; k++) {
         delete_buttons[k].addEventListener("click", show_delete_modal);
     }
   }
@@ -84,6 +84,7 @@ function addFeed () {
   load_button.setAttribute("class", "load_button");
   load_button.setAttribute("title", "Load");
   load_button.setAttribute("name", rss_url.value);
+  load_button.setAttribute("value", feedName);
   load_button.addEventListener("click", loadFeed);
   delete_button.setAttribute("class", "delete_button");
   delete_button.setAttribute("title", "Delete");
@@ -122,21 +123,22 @@ function loadFeed(event) {
   container.innerHTML = "";
   const load = event.target;
   const URL = load.name;
+  const name = load.value;
   fetch(URL)
     .then(response => response.text())
-    .then(data => parse(data))
+    .then(data => parse(data, name))
 }
 
-function parse(data) {
+function parse(data, name) {
   var parser = new DOMParser();
   xmlDoc = parser.parseFromString(data,"text/xml");
   const num_entries = xmlDoc.getElementsByTagName("item").length;
-  for(var i = 0; i < num_entries; i++) {
+  for(let i = 0; i < num_entries; i++) {
     var divider = document.createElement("div");
     divider.setAttribute("class", "feed_data")
     const xItem = xmlDoc.getElementsByTagName("item")[i];
 
-    divider.appendChild(handleItem(xItem));
+    divider.appendChild(handleItem(xItem, name));
     container.appendChild(divider);
   }
 }
@@ -170,10 +172,13 @@ function delete_feed(event) {
   });
 }
 
-function handleItem(item) {
+function handleItem(item, name) {
+  var xName = document.createElement("p");
+  xName.innerHTML = name;
   const children = item.childNodes;
   var sub_divider = document.createElement("div");
-  for(var i = 0; i < children.length; i++) {
+  sub_divider.appendChild(xName);
+  for(let i = 0; i < children.length; i++) {
     child = children.item(i)
     if(child.tagName == "title") {
       var xTitle = document.createElement("p");

@@ -32,6 +32,14 @@ h2 {
   text-align: center;
   background-color: #AFDCEB;
 }
+
+h3 {
+  font-size: 1rem;
+  color: #23395D;
+  margin-bottom: 20px;
+  padding: 0;
+  text-align: center;
+}
   
 li {
   font-size: 12px;
@@ -169,9 +177,14 @@ p {
     margin: 0 0 10px 2px;
   }
 
-  #add_link_button, #delete_feed_button {
+  #add_link_button {
     position: relative;
-    left: 460px;
+    left: 860px;
+  }
+
+  #delete_feed_button {
+    position: relative;
+    left: 710px;
   }
 
   .big_button {
