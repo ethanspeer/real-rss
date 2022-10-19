@@ -116,14 +116,14 @@ p {
 
 /* … */
 
-  .close {
+  .close_modal {
     color: #aaaaaa;
     float: right;
     font-size: 28px;
     font-weight: bold;
   }
   
-  .close:hover, .close:focus {
+  .close_modal:hover, .close_modal:focus {
     color: #000;
     text-decoration: none;
     cursor: pointer;
@@ -169,7 +169,7 @@ p {
     margin: 0 0 10px 2px;
   }
 
-  #add_link_button {
+  #add_link_button, #delete_feed_button {
     position: relative;
     left: 460px;
   }
@@ -186,10 +186,26 @@ p {
     height: 30px;
     cursor: pointer;
     transition-duration: 0.4s;
-  } 
-  .big_button:hover {
+  } .big_button:hover {
     background-color: #23395D;
     color: #90e0ef;
+  }
+
+  .danger_button {
+    background-color: #8A0700;
+    border-radius: 4px;
+    border-color: #FEB5B1;
+    border-width: 1px;
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
+    width: 140px;
+    height: 30px;
+    cursor: pointer;
+    transition-duration: 0.4s;
+  } .danger_button:hover {
+    background-color: #390200;
+    color: #FF6961;
   }
 
   .form_field {

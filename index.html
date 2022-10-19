@@ -11,10 +11,10 @@
 
 
     <button type="button" id="add_feed_button" class="big_button">Add Feed</button>
-          <div id="add_feed_modal" class="modal">
-
+      
+    <div id="add_feed_modal" class="modal">
       <div class="modal-content">
-        <span class="close">&times;</span>
+        <span class="close_modal">&times;</span>
           <label for="rss_name" class="form_label">Display Name</label> <br>
           <input type="text" id="rss_name" name="rss_name" class="form_field"> <br>
           <label for="rss_url" class="form_label">URL</label> <br>
@@ -22,12 +22,19 @@
           <button type="button" id="add_link_button" class="big_button">Add Link</button>
         </form>
       </div>
-    
     </div>
 
-    <div id="editFeedModal" class="modal">
+    <div id="edit_feed_modal" class="modal">
       <div class="modal-content">
-        <span class="close">&times;</span>
+        <span class="close_modal">&times;</span>
+      </div>
+    </div>
+
+    <div id="delete_feed_modal" class="modal">
+      <div class="modal-content" id="delete_modal_content">
+        <span class="close_modal">&times;</span>
+        <p>Are you sure you want to delete?</p>
+        <button type="button" id="cancel_delete_button" class="big_button">Cancel</button>
       </div>
     </div>
 

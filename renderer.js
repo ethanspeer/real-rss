@@ -10,17 +10,16 @@ const func = async () => {
 
 const add_feed_button = document.getElementById('add_feed_button');
 const add_feed_modal = document.getElementById('add_feed_modal');
+const delete_feed_modal = document.getElementById('delete_feed_modal');
 const add_link_button = document.getElementById('add_link_button');
 const rss_name = document.getElementById('rss_name');
 const rss_url = document.getElementById('rss_url');
 var feedLinks = document.getElementById('feedlinks');
-var span = document.getElementsByClassName("close")[0];
 
 const container = document.getElementById('container');
 
-
 add_feed_button.addEventListener('click', () => {
-    add_feed_modal.style.display = "block";
+  add_feed_modal.style.display = "block";
 });
 
 add_link_button.addEventListener('click', () => {
@@ -28,24 +27,29 @@ add_link_button.addEventListener('click', () => {
   hideModal();
 });
 
-span.addEventListener('click', () => {
+for (let i = 0; i < 3; i++) {
+  var close_button = document.getElementsByClassName("close_modal")[i];
+  close_button.addEventListener('click', () => {
     hideModal();
-});
+    fix_delete_feed_button();
+  });
+}
 
 window.onclick = function(event) {
-    if (event.target == add_feed_modal) {
+    if ((event.target == add_feed_modal) || event.target == delete_feed_modal) {
      hideModal();
+     fix_delete_feed_button();
     }
   }
 
 function hideModal() {
   add_feed_modal.style.display = "none";
+  delete_feed_modal.style.display = "none";
 }
 
 function initialize() {
   if (localStorage["feedList"]) {
     feedLinks.innerHTML = localStorage["feedList"];
-    console.log(feedLinks.innerHTML);
     var edit_buttons = document.getElementsByClassName("edit_button");
     for(var i = 0; i < edit_buttons.length; i++) {
         edit_buttons[i].addEventListener("click", editFeed);
@@ -56,7 +60,7 @@ function initialize() {
     }
     var delete_buttons = document.getElementsByClassName("delete_button");
     for(var k = 0; k < delete_buttons.length; k++) {
-        delete_buttons[k].addEventListener("click", deleteFeed);
+        delete_buttons[k].addEventListener("click", show_delete_modal);
     }
   }
 }
@@ -83,7 +87,7 @@ function addFeed () {
   load_button.addEventListener("click", loadFeed);
   delete_button.setAttribute("class", "delete_button");
   delete_button.setAttribute("title", "Delete");
-  delete_button.addEventListener("click", deleteFeed);
+  delete_button.addEventListener("click", show_delete_modal);
 
   icon_edit.setAttribute("src", "./images/edit.png");
   icon_edit.setAttribute("class", "feed-button-icon");
@@ -118,14 +122,12 @@ function loadFeed(event) {
   container.innerHTML = "";
   const load = event.target;
   const URL = load.name;
-  console.log(URL);
   fetch(URL)
     .then(response => response.text())
     .then(data => parse(data))
 }
 
 function parse(data) {
-  console.log(data);
   var parser = new DOMParser();
   xmlDoc = parser.parseFromString(data,"text/xml");
   const num_entries = xmlDoc.getElementsByTagName("item").length;
@@ -136,12 +138,36 @@ function parse(data) {
 
     divider.appendChild(handleItem(xItem));
     container.appendChild(divider);
-    console.log(container);
   }
 }
 
-function deleteFeed() {
-  console.log("delete");
+function show_delete_modal(event) {
+  var delete_feed_button = document.createElement("button");
+  delete_feed_button.setAttribute("id", "delete_feed_button");
+  delete_feed_button.setAttribute("class", "danger_button")
+  delete_feed_button.innerText = "Delete";
+  var div = document.getElementById("delete_modal_content");
+  div.appendChild(delete_feed_button);
+  delete_feed_modal.style.display = "block";
+  delete_feed(event);
+}
+
+function delete_feed(event) {
+  var parentElement = event.target.parentElement;
+  var delete_feed_button = document.getElementById("delete_feed_button");
+  delete_feed_button.addEventListener('click', () => {
+    parentElement.remove();
+    localStorage["feedList"] = feedLinks.innerHTML;
+    container.innerHTML = "";
+    hideModal();
+    fix_delete_feed_button();
+  });
+
+  var cancel_delete_button = document.getElementById("cancel_delete_button");
+  cancel_delete_button.addEventListener('click', () => {
+    hideModal();
+    fix_delete_feed_button();
+  });
 }
 
 function handleItem(item) {
@@ -174,6 +200,13 @@ function handleItem(item) {
     }
   }
   return sub_divider;
+}
+
+function fix_delete_feed_button () {
+  var delete_feed_button = document.getElementById("delete_feed_button");
+  if(delete_feed_button) {
+    delete_feed_button.remove();
+  }
 }
 
 window.onload = initialize;
