@@ -142,14 +142,27 @@ function loadFeed(event) {
 function parse(data, name) {
   var parser = new DOMParser();
   xmlDoc = parser.parseFromString(data,"text/xml");
-  const num_entries = xmlDoc.getElementsByTagName("item").length;
-  for(let i = 0; i < num_entries; i++) {
-    var divider = document.createElement("div");
-    divider.setAttribute("class", "feed_data")
-    const xItem = xmlDoc.getElementsByTagName("item")[i];
-
-    divider.appendChild(handleItem(xItem, name));
-    container.appendChild(divider);
+  const num_items = xmlDoc.getElementsByTagName("item").length;
+  const num_entries = xmlDoc.getElementsByTagName("entry").length;
+  if(num_items) {
+    for(let i = 0; i < num_items; i++) {
+      var divider = document.createElement("div");
+      divider.setAttribute("class", "feed_data")
+      const xItem = xmlDoc.getElementsByTagName("item")[i];
+  
+      divider.appendChild(handleItem(xItem, name));
+      container.appendChild(divider);
+    }
+  }
+  if(num_entries) {
+    for(let i = 0; i < num_entries; i++) {
+      var divider = document.createElement("div");
+      divider.setAttribute("class", "feed_data")
+      const xEntry = xmlDoc.getElementsByTagName("entry")[i];
+  
+      divider.appendChild(handleItem(xEntry, name));
+      container.appendChild(divider);
+    }
   }
 }
 
@@ -161,28 +174,47 @@ function handleItem(item, name) {
   sub_divider.appendChild(xName);
   for(let i = 0; i < children.length; i++) {
     child = children.item(i)
-    if(child.tagName == "title") {
-      var xTitle = document.createElement("p");
-      xTitle.setAttribute("class", "feed_title");
-      xTitle.innerHTML = child.innerHTML;
-      sub_divider.appendChild(xTitle);
-    } else if(child.tagName == "guid") {
-      var xGuid = document.createElement("a");
-      xGuid.setAttribute("class", "feed_guid");
-      xGuid.setAttribute("target", "_blank");
-      xGuid.setAttribute("href", child.innerHTML);
-      xGuid.innerHTML = child.innerHTML;
-      sub_divider.appendChild(xGuid);
-    } else if(child.tagName == "description") {
-      var xDescription = document.createElement("p");
-      xDescription.setAttribute("class", "feed_description");
-      xDescription.innerHTML = child.innerHTML;
-      sub_divider.appendChild(xDescription);
-    } else if(child.tagName == "pubDate") {
-      var xPubDate = document.createElement("p");
-      xPubDate.setAttribute("class", "feed_pubDate");
-      xPubDate.innerHTML = child.innerHTML;
-      sub_divider.appendChild(xPubDate);
+    switch (child.tagName) {
+      case "title":
+        var xTitle = document.createElement("p");
+        xTitle.setAttribute("class", "feed_title");
+        xTitle.innerHTML = child.innerHTML;
+        sub_divider.appendChild(xTitle);
+        break;
+      case "guid":
+        var xGuid = document.createElement("a");
+        xGuid.setAttribute("class", "feed_guid");
+        xGuid.setAttribute("target", "_blank");
+        xGuid.setAttribute("href", child.innerHTML);
+        xGuid.innerHTML = child.innerHTML;
+        sub_divider.appendChild(xGuid);
+        break;
+      case "description":
+        var xDescription = document.createElement("p");
+        xDescription.setAttribute("class", "feed_description");
+        xDescription.innerHTML = child.innerHTML;
+        sub_divider.appendChild(xDescription);
+        break;
+      case "pubDate":
+        var xPubDate = document.createElement("p");
+        xPubDate.setAttribute("class", "feed_pubDate");
+        xPubDate.innerHTML = child.innerHTML;
+        sub_divider.appendChild(xPubDate);
+        break;
+      case "link":
+        var xGuid = document.createElement("a");
+        xGuid.setAttribute("class", "feed_guid");
+        xGuid.setAttribute("target", "_blank");
+        xGuid.setAttribute("href", child.getAttribute("href"));
+        xGuid.innerHTML = child.getAttribute("href");
+        sub_divider.appendChild(xGuid);
+        break;
+      case "published":
+        var xPubDate = document.createElement("p");
+        xPubDate.setAttribute("class", "feed_pubDate");
+        xPubDate.innerHTML = child.innerHTML;
+        sub_divider.appendChild(xPubDate);
+        break;
     }
   }
   return sub_divider;
