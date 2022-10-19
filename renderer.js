@@ -14,42 +14,36 @@ const delete_feed_modal = document.getElementById('delete_feed_modal');
 const add_link_button = document.getElementById('add_link_button');
 const rss_name = document.getElementById('rss_name');
 const rss_url = document.getElementById('rss_url');
-var feedLinks = document.getElementById('feedlinks');
+var feed_list = document.getElementById('feed_list');
 
 const container = document.getElementById('container');
 
-add_feed_button.addEventListener('click', () => {
-  add_feed_modal.style.display = "block";
-});
+function initialize() {
+  add_feed_button.addEventListener('click', () => {
+    add_feed_modal.style.display = "block";
+  });
+  
+  add_link_button.addEventListener('click', () => {
+    addFeed();
+    hideModal();
+  });
 
-add_link_button.addEventListener('click', () => {
-  addFeed();
-  hideModal();
-});
+  for(let i = 0; i < 3; i++) {
+    var close_button = document.getElementsByClassName("close_modal")[i];
+    close_button.addEventListener('click', () => {
+      hideModal();
+      fix_delete_feed_button();
+    });
+  }
 
-for(let i = 0; i < 3; i++) {
-  var close_button = document.getElementsByClassName("close_modal")[i];
-  close_button.addEventListener('click', () => {
+  var cancel_delete_button = document.getElementById("cancel_delete_button");
+  cancel_delete_button.addEventListener('click', () => {
     hideModal();
     fix_delete_feed_button();
   });
-}
 
-window.onclick = function(event) {
-    if ((event.target == add_feed_modal) || event.target == delete_feed_modal) {
-     hideModal();
-     fix_delete_feed_button();
-    }
-  }
-
-function hideModal() {
-  add_feed_modal.style.display = "none";
-  delete_feed_modal.style.display = "none";
-}
-
-function initialize() {
-  if (localStorage["feedList"]) {
-    feedLinks.innerHTML = localStorage["feedList"];
+  if (localStorage["feed_list"]) {
+    feed_list.innerHTML = localStorage["feed_list"];
     var edit_buttons = document.getElementsByClassName("edit_button");
     for(let i = 0; i < edit_buttons.length; i++) {
         edit_buttons[i].addEventListener("click", editFeed);
@@ -65,9 +59,11 @@ function initialize() {
   }
 }
 
+/* ADD FEED */
+/* ############################################################################################### */
 function addFeed () {
-  var feedName = document.getElementById("rss_name").value;
-  var feedText = document.createTextNode(feedName);
+  var feed_name = document.getElementById("rss_name").value;
+  var feed_text = document.createTextNode(feed_name);
   var li = document.createElement("li");
   var edit_button = document.createElement("button");
   var load_button = document.createElement("button");
@@ -77,47 +73,61 @@ function addFeed () {
   var icon_load = document.createElement("img");
   var icon_delete = document.createElement("img");
 
-  li.setAttribute("text-align", "center");
+
+  /* EDIT BUTTON */
   edit_button.setAttribute("class", "edit_button");
   edit_button.setAttribute("title", "Edit");
   edit_button.addEventListener("click", editFeed);
+  /* LOAD BUTTON */
   load_button.setAttribute("class", "load_button");
   load_button.setAttribute("title", "Load");
   load_button.setAttribute("name", rss_url.value);
-  load_button.setAttribute("value", feedName);
+  load_button.setAttribute("value", feed_name);
   load_button.addEventListener("click", loadFeed);
+  /* DELETE BUTTON */
   delete_button.setAttribute("class", "delete_button");
   delete_button.setAttribute("title", "Delete");
+  delete_button.setAttribute("name", feed_name);
   delete_button.addEventListener("click", show_delete_modal);
 
+  /* EDIT ICON */
+  icon_edit.setAttribute("class", "feed_button_icon");
   icon_edit.setAttribute("src", "./images/edit.png");
-  icon_edit.setAttribute("class", "feed-button-icon");
   icon_edit.setAttribute("unselectable", "on");
+  /* LOAD ICON */
+  icon_load.setAttribute("class", "feed_button_icon");
   icon_load.setAttribute("src", "./images/load.png");
-  icon_load.setAttribute("class", "feed-button-icon");
   icon_load.setAttribute("unselectable", "on");
+  /* DELETE ICON */
+  icon_delete.setAttribute("class", "feed_button_icon");
   icon_delete.setAttribute("src", "./images/delete.png");
-  icon_delete.setAttribute("class", "feed-button-icon");
   icon_delete.setAttribute("unselectable", "on");
 
   edit_button.appendChild(icon_edit);
   load_button.appendChild(icon_load);
   delete_button.appendChild(icon_delete);
-  li.appendChild(feedText);
+
+  li.appendChild(feed_text);
   li.appendChild(edit_button);
   li.appendChild(load_button);
   li.appendChild(delete_button);
-  feedLinks.appendChild(li);
+  feed_list.appendChild(li);
 
-  localStorage["feedList"] = feedLinks.innerHTML;
+  save();
   rss_name.value = "";
   rss_url.value = "";
 }
+/* ############################################################################################### */
 
+/* EDIT FEED */
+/* ############################################################################################### */
 function editFeed() {
   console.log("edit");
 }
+/* ############################################################################################### */
 
+/* LOAD FEED */
+/* ############################################################################################### */
 function loadFeed(event) {
   console.log("load");
   container.innerHTML = "";
@@ -141,35 +151,6 @@ function parse(data, name) {
     divider.appendChild(handleItem(xItem, name));
     container.appendChild(divider);
   }
-}
-
-function show_delete_modal(event) {
-  var delete_feed_button = document.createElement("button");
-  delete_feed_button.setAttribute("id", "delete_feed_button");
-  delete_feed_button.setAttribute("class", "danger_button")
-  delete_feed_button.innerText = "Delete";
-  var div = document.getElementById("delete_modal_content");
-  div.appendChild(delete_feed_button);
-  delete_feed_modal.style.display = "block";
-  delete_feed(event);
-}
-
-function delete_feed(event) {
-  var parentElement = event.target.parentElement;
-  var delete_feed_button = document.getElementById("delete_feed_button");
-  delete_feed_button.addEventListener('click', () => {
-    parentElement.remove();
-    localStorage["feedList"] = feedLinks.innerHTML;
-    container.innerHTML = "";
-    hideModal();
-    fix_delete_feed_button();
-  });
-
-  var cancel_delete_button = document.getElementById("cancel_delete_button");
-  cancel_delete_button.addEventListener('click', () => {
-    hideModal();
-    fix_delete_feed_button();
-  });
 }
 
 function handleItem(item, name) {
@@ -206,6 +187,36 @@ function handleItem(item, name) {
   }
   return sub_divider;
 }
+/* ############################################################################################### */
+
+/* DELETE FEED */
+/* ############################################################################################### */
+function show_delete_modal(event) {
+  var delete_feed_button = document.createElement("button");
+  delete_feed_button.setAttribute("id", "delete_feed_button");
+  delete_feed_button.setAttribute("class", "danger_button")
+  delete_feed_button.innerText = "Delete";
+  var div = document.getElementById("delete_modal_content");
+  div.appendChild(delete_feed_button);
+
+  var h3 = document.getElementById("danger_message");
+  h3.innerHTML = "Are you sure you want to delete the feed " + "<u>" + event.target.name + "</u>" + "?";
+
+  delete_feed_modal.style.display = "block";
+  delete_feed(event);
+}
+
+function delete_feed(event) {
+  var parentElement = event.target.parentElement;
+  var delete_feed_button = document.getElementById("delete_feed_button");
+  delete_feed_button.addEventListener('click', () => {
+  parentElement.remove();
+  save();
+  container.innerHTML = "";
+  hideModal();
+  fix_delete_feed_button();
+  });
+}
 
 function fix_delete_feed_button () {
   var delete_feed_button = document.getElementById("delete_feed_button");
@@ -213,5 +224,26 @@ function fix_delete_feed_button () {
     delete_feed_button.remove();
   }
 }
+/* ############################################################################################### */
+
+/* UTILITIES */
+/* ############################################################################################### */
+function hideModal() {
+  add_feed_modal.style.display = "none";
+  delete_feed_modal.style.display = "none";
+}
+
+function save() {
+  localStorage["feed_list"] = feed_list.innerHTML;
+}
+/* ############################################################################################### */
+
 
 window.onload = initialize;
+
+window.onclick = function(event) {
+  if ((event.target == add_feed_modal) || event.target == delete_feed_modal) {
+   hideModal();
+   fix_delete_feed_button();
+  }
+}

@@ -141,7 +141,7 @@ p {
     text-align: right;
   }
 
-  .feed-button-icon {
+  .feed_button_icon {
     width: 10px;
     height: 10px;
     pointer-events: none;
