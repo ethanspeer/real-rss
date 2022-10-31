@@ -1,3 +1,5 @@
+import {checkNameExists, checkURLExists, constructError} from './error.js'
+
 const information = document.getElementById('info');
 information.innerText = `This app is using Chrome (v${versions.chrome()}), Node.js (v${versions.node()}), and Electron (v${versions.electron()})`;
 
@@ -24,8 +26,12 @@ function initialize() {
   });
   
   add_link_button.addEventListener('click', () => {
-    addFeed();
-    hideModal();
+    if(!(checkNameExists(rss_name.value))) {
+      console.log("error");
+    } else {
+      addFeed();
+      hideModal();
+    }
   });
 
   for(let i = 0; i < 3; i++) {
@@ -72,7 +78,6 @@ function addFeed () {
   var icon_edit = document.createElement("img");
   var icon_load = document.createElement("img");
   var icon_delete = document.createElement("img");
-
 
   /* EDIT BUTTON */
   edit_button.setAttribute("class", "edit_button");
@@ -141,7 +146,7 @@ function loadFeed(event) {
 
 function parse(data, name) {
   var parser = new DOMParser();
-  xmlDoc = parser.parseFromString(data,"text/xml");
+  var xmlDoc = parser.parseFromString(data,"text/xml");
   const num_items = xmlDoc.getElementsByTagName("item").length;
   const num_entries = xmlDoc.getElementsByTagName("entry").length;
   if(num_items) {
@@ -170,16 +175,37 @@ function handleItem(item, name) {
   var xName = document.createElement("p");
   xName.innerHTML = name;
   const children = item.childNodes;
+  var mark_read_button = document.createElement("button");
+  mark_read_button.setAttribute("class", "mark_read_button");
+  var icon_mark = document.createElement("img");
+  icon_mark.setAttribute("class", "feed_button_icon");
+  icon_mark.setAttribute("src", "./images/mark.png");
+  icon_mark.setAttribute("unselectable", "on");
+  mark_read_button.appendChild(icon_mark);
+  mark_read_button.setAttribute("title", "Mark Read/Unread");
+  mark_read_button.addEventListener('click', () => {
+    var parentElement = mark_read_button.parentElement;
+    console.log(parentElement);
+    if(parentElement.style.backgroundColor != "white") {
+      parentElement.style.backgroundColor = "white";
+    } else {
+      parentElement.style.backgroundColor = "#EAEDED";
+    }
+    console.log(parentElement)
+    });
+
   var sub_divider = document.createElement("div");
+  sub_divider.setAttribute("class", "feed_content");
   sub_divider.appendChild(xName);
   for(let i = 0; i < children.length; i++) {
-    child = children.item(i)
+    const child = children.item(i)
     switch (child.tagName) {
       case "title":
         var xTitle = document.createElement("p");
         xTitle.setAttribute("class", "feed_title");
         xTitle.innerHTML = child.innerHTML;
         sub_divider.appendChild(xTitle);
+        sub_divider.appendChild(mark_read_button);
         break;
       case "guid":
         var xGuid = document.createElement("a");

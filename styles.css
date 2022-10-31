@@ -58,6 +58,7 @@ li {
 
 p {
   font-size: 0.625rem;
+  display: block;
 }
 /* ############################################################################################### */
 
@@ -244,14 +245,22 @@ p {
   .feed_data {
     border-bottom: solid 0.1px;
     border-color: #888;
+    padding: 0;
+    margin: 0;
+  }
+
+  .feed_content {
+    background-color: #EAEDED;
   }
 
   .feed_title {
     text-align: left;
     font-weight: bold;
+    display: inline-block;
   }
 
   .feed_guid {
+    display: block;
   }
 
   .feed_description {
@@ -260,3 +269,22 @@ p {
   .feed_pubDate {
     text-align: right;
   }
+
+.error {
+  color: #333;
+  background: #fafafa;
+  border: 1px solid #ccc;
+  color: #ba3939;
+  background: #ffe0e0;
+  border: 1px solid #a33a3a;
+  font-weight: bold;
+  text-align: center;
+  position: relative;
+  bottom: 40px;
+  left: 300px;
+  width: 200px;
+}
+
+.mark_read_button {
+  float: right;
+}
