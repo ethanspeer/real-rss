@@ -311,7 +311,7 @@ function save() {
 
 function pull_history(link) {
   //if localStorage[link] has title that is not found in container.innerHTML, remove item from localStorage[link]
-
+  container.innerHTML += localStorage[link]
 
     var mark_read_buttons = document.getElementsByClassName("mark_read_button");
     for(let i = 0; i < mark_read_buttons.length; i++) {
