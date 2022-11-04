@@ -249,8 +249,12 @@ p {
     margin: 0;
   }
 
-  .feed_content {
+  .read {
     background-color: #EAEDED;
+  }
+
+  .unread {
+    background-color: white;
   }
 
   .feed_title {

@@ -18,7 +18,7 @@ const rss_name = document.getElementById('rss_name');
 const rss_url = document.getElementById('rss_url');
 var feed_list = document.getElementById('feed_list');
 
-const container = document.getElementById('container');
+var container = document.getElementById('container');
 
 function initialize() {
   add_feed_button.addEventListener('click', () => {
@@ -134,17 +134,19 @@ function editFeed() {
 /* LOAD FEED */
 /* ############################################################################################### */
 function loadFeed(event) {
-  console.log("load");
-  container.innerHTML = "";
+
+    while(container.firstChild) {
+      container.removeChild(container.lastChild)
+    }
   const load = event.target;
   const URL = load.name;
   const name = load.value;
   fetch(URL)
     .then(response => response.text())
-    .then(data => parse(data, name))
+    .then(data => parse(data, name, URL))
 }
 
-function parse(data, name) {
+function parse(data, name, link) {
   var parser = new DOMParser();
   var xmlDoc = parser.parseFromString(data,"text/xml");
   const num_items = xmlDoc.getElementsByTagName("item").length;
@@ -154,9 +156,11 @@ function parse(data, name) {
       var divider = document.createElement("div");
       divider.setAttribute("class", "feed_data")
       const xItem = xmlDoc.getElementsByTagName("item")[i];
-  
-      divider.appendChild(handleItem(xItem, name));
-      container.appendChild(divider);
+
+      divider.appendChild(handleItem(xItem, name, link));
+      if(divider.childNodes[0].className != "removable") {
+        container.appendChild(divider);
+      }
     }
   }
   if(num_entries) {
@@ -165,13 +169,16 @@ function parse(data, name) {
       divider.setAttribute("class", "feed_data")
       const xEntry = xmlDoc.getElementsByTagName("entry")[i];
   
-      divider.appendChild(handleItem(xEntry, name));
-      container.appendChild(divider);
+      divider.appendChild(handleItem(xEntry, name, link));
+      if(divider.childNodes[0].className != "removable") {
+        container.appendChild(divider);
+      }
     }
   }
+  pull_history(link);
 }
 
-function handleItem(item, name) {
+function handleItem(item, name, link) {
   var xName = document.createElement("p");
   xName.innerHTML = name;
   const children = item.childNodes;
@@ -183,19 +190,8 @@ function handleItem(item, name) {
   icon_mark.setAttribute("unselectable", "on");
   mark_read_button.appendChild(icon_mark);
   mark_read_button.setAttribute("title", "Mark Read/Unread");
-  mark_read_button.addEventListener('click', () => {
-    var parentElement = mark_read_button.parentElement;
-    console.log(parentElement);
-    if(parentElement.style.backgroundColor != "white") {
-      parentElement.style.backgroundColor = "white";
-    } else {
-      parentElement.style.backgroundColor = "#EAEDED";
-    }
-    console.log(parentElement)
-    });
 
   var sub_divider = document.createElement("div");
-  sub_divider.setAttribute("class", "feed_content");
   sub_divider.appendChild(xName);
   for(let i = 0; i < children.length; i++) {
     const child = children.item(i)
@@ -243,7 +239,25 @@ function handleItem(item, name) {
         break;
     }
   }
-  return sub_divider;
+  if(localStorage[link]) {
+    if(localStorage[link].includes(sub_divider.getElementsByClassName("feed_title")[0].innerHTML)) {
+      sub_divider.remove();
+      var temp = document.createElement("div");
+      temp.setAttribute("class", "removable")
+      return temp
+    }
+  }
+  return sub_divider
+}
+
+function mark(event) {
+  var parentElement = event.target.parentElement;
+  if(parentElement.className == "read") {
+    parentElement.setAttribute("class", "unread");
+  } else {
+    parentElement.setAttribute("class", "read");
+  }
+  localStorage.setItem(event.target.link, container.innerHTML)
 }
 /* ############################################################################################### */
 
@@ -293,6 +307,21 @@ function hideModal() {
 
 function save() {
   localStorage["feed_list"] = feed_list.innerHTML;
+}
+
+function pull_history(link) {
+  //if localStorage[link] has title that is not found in container.innerHTML, remove item from localStorage[link]
+
+
+    var mark_read_buttons = document.getElementsByClassName("mark_read_button");
+    for(let i = 0; i < mark_read_buttons.length; i++) {
+        mark_read_buttons[i].link = link
+        mark_read_buttons[i].addEventListener("click", mark);
+    }
+}
+
+function save_history(container) {
+
 }
 /* ############################################################################################### */
 
