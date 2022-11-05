@@ -48,77 +48,36 @@ function initialize() {
     fix_delete_feed_button();
   });
 
-  if (localStorage["feed_list"]) {
-    feed_list.innerHTML = localStorage["feed_list"];
-    var edit_buttons = document.getElementsByClassName("edit_button");
-    for(let i = 0; i < edit_buttons.length; i++) {
-        edit_buttons[i].addEventListener("click", editFeed);
-    }
-    var load_buttons = document.getElementsByClassName("load_button");
-    for(let j = 0; j < load_buttons.length; j++) {
-        load_buttons[j].addEventListener("click", loadFeed);
-    }
-    var delete_buttons = document.getElementsByClassName("delete_button");
-    for(let k = 0; k < delete_buttons.length; k++) {
-        delete_buttons[k].addEventListener("click", show_delete_modal);
-    }
-  }
+  add_listeners();
 }
 
 /* ADD FEED */
 /* ############################################################################################### */
 function addFeed () {
-  var feed_name = document.getElementById("rss_name").value;
-  var feed_text = document.createTextNode(feed_name);
-  var li = document.createElement("li");
-  var edit_button = document.createElement("button");
-  var load_button = document.createElement("button");
-  var delete_button = document.createElement("button");
+  var json_feed = {
+    "links": [
+    ],
+    "html": "<li>" + rss_name.value + "<button class=\"edit_button\" title=\"Edit\">" +
+    "<img class=\"feed_button_icon\" src=\"./images/edit.png\" unselectable=\"on\"></button>" +
+    "<button class=\"load_button\" title=\"Load\" name=\"" + rss_url.value + "\" value=\"" + rss_name.value + "\">" +
+    "<img class=\"feed_button_icon\" src=\"./images/load.png\" unselectable=\"on\"></button>" +
+    "<button class=\"delete_button\" title=\"Delete\" name=\"" + rss_name.value + "\">" +
+    "<img class=\"feed_button_icon\" src=\"./images/delete.png\" unselectable=\"on\"></button>" + "</li>",
+    "name": rss_name.value,
+    "url": rss_url.value,
+  }
 
-  var icon_edit = document.createElement("img");
-  var icon_load = document.createElement("img");
-  var icon_delete = document.createElement("img");
 
-  /* EDIT BUTTON */
-  edit_button.setAttribute("class", "edit_button");
-  edit_button.setAttribute("title", "Edit");
-  edit_button.addEventListener("click", editFeed);
-  /* LOAD BUTTON */
-  load_button.setAttribute("class", "load_button");
-  load_button.setAttribute("title", "Load");
-  load_button.setAttribute("name", rss_url.value);
-  load_button.setAttribute("value", feed_name);
-  load_button.addEventListener("click", loadFeed);
-  /* DELETE BUTTON */
-  delete_button.setAttribute("class", "delete_button");
-  delete_button.setAttribute("title", "Delete");
-  delete_button.setAttribute("name", feed_name);
-  delete_button.addEventListener("click", show_delete_modal);
+  if(localStorage.getItem("rss_feeds")) {
+    localStorage.setItem("rss_feeds", 
+    localStorage.getItem("rss_feeds").substring(0, localStorage.getItem("rss_feeds").length - 1))
+    localStorage.setItem("rss_feeds", localStorage.getItem("rss_feeds") + "," + JSON.stringify(json_feed) + "]")
+  } else {
+    localStorage.setItem("rss_feeds", "[" + JSON.stringify(json_feed) + "]")
+  }
+  save_feeds()
+  add_listeners()
 
-  /* EDIT ICON */
-  icon_edit.setAttribute("class", "feed_button_icon");
-  icon_edit.setAttribute("src", "./images/edit.png");
-  icon_edit.setAttribute("unselectable", "on");
-  /* LOAD ICON */
-  icon_load.setAttribute("class", "feed_button_icon");
-  icon_load.setAttribute("src", "./images/load.png");
-  icon_load.setAttribute("unselectable", "on");
-  /* DELETE ICON */
-  icon_delete.setAttribute("class", "feed_button_icon");
-  icon_delete.setAttribute("src", "./images/delete.png");
-  icon_delete.setAttribute("unselectable", "on");
-
-  edit_button.appendChild(icon_edit);
-  load_button.appendChild(icon_load);
-  delete_button.appendChild(icon_delete);
-
-  li.appendChild(feed_text);
-  li.appendChild(edit_button);
-  li.appendChild(load_button);
-  li.appendChild(delete_button);
-  feed_list.appendChild(li);
-
-  save();
   rss_name.value = "";
   rss_url.value = "";
 }
@@ -283,8 +242,24 @@ function delete_feed(event) {
   var delete_feed_button = document.getElementById("delete_feed_button");
   delete_feed_button.addEventListener('click', () => {
   parentElement.remove();
-  save();
   container.innerHTML = "";
+
+  var feed_items = JSON.parse(localStorage.getItem("rss_feeds"))
+  for(let i = 0; i < feed_items.length; i++) {
+    if(event.target.name == feed_items[i].name) {
+      feed_items.splice(i, 1);
+    }
+    if(feed_items.length == 0) {
+      localStorage.removeItem("rss_feeds")
+    }
+  }
+
+  if(localStorage.getItem("rss_feeds")) {
+    localStorage.setItem("rss_feeds", JSON.stringify(feed_items))
+  }
+
+  save_feeds()
+  add_listeners()
   hideModal();
   fix_delete_feed_button();
   });
@@ -305,8 +280,32 @@ function hideModal() {
   delete_feed_modal.style.display = "none";
 }
 
-function save() {
-  localStorage["feed_list"] = feed_list.innerHTML;
+function add_listeners() {
+  if (localStorage.getItem("rss_feeds")) {
+    save_feeds()
+    var edit_buttons = document.getElementsByClassName("edit_button");
+    for(let i = 0; i < edit_buttons.length; i++) {
+        edit_buttons[i].addEventListener("click", editFeed);
+    }
+    var load_buttons = document.getElementsByClassName("load_button");
+    for(let j = 0; j < load_buttons.length; j++) {
+        load_buttons[j].addEventListener("click", loadFeed);
+    }
+    var delete_buttons = document.getElementsByClassName("delete_button");
+    for(let k = 0; k < delete_buttons.length; k++) {
+        delete_buttons[k].addEventListener("click", show_delete_modal);
+    }
+  }
+}
+
+function save_feeds() {
+  var feed_items = JSON.parse(localStorage.getItem("rss_feeds"))
+  feed_list.innerHTML = ""
+  if(feed_items) {
+    for(let i = 0; i < feed_items.length; i++) {
+      feed_list.innerHTML += feed_items[i].html
+    }
+  }
 }
 
 function pull_history(link) {
