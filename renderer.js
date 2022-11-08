@@ -97,127 +97,93 @@ function loadFeed(event) {
     while(container.firstChild) {
       container.removeChild(container.lastChild)
     }
-  const load = event.target;
-  const URL = load.name;
-  const name = load.value;
+  const URL = event.target.name;
   fetch(URL)
     .then(response => response.text())
-    .then(data => parse(data, name, URL))
+    .then(data => parse(data, URL))
 }
 
-function parse(data, name, link) {
+function parse(data, URL) {
+  var feed_items = JSON.parse(localStorage.getItem("rss_feeds"))
+  for(let i = 0; i < feed_items.length; i++) {
+    if(feed_items[i].url == URL) {
+      feed_items[i].links.splice(0, feed_items[i].links.length)
+    }
+  }
   var parser = new DOMParser();
-  var xmlDoc = parser.parseFromString(data,"text/xml");
-  const num_items = xmlDoc.getElementsByTagName("item").length;
-  const num_entries = xmlDoc.getElementsByTagName("entry").length;
+  var xml_doc = parser.parseFromString(data, "text/xml");
+  const num_items = xml_doc.getElementsByTagName("item").length;
+  const num_entries = xml_doc.getElementsByTagName("entry").length;
   if(num_items) {
     for(let i = 0; i < num_items; i++) {
-      var divider = document.createElement("div");
-      divider.setAttribute("class", "feed_data")
-      const xItem = xmlDoc.getElementsByTagName("item")[i];
-
-      divider.appendChild(handleItem(xItem, name, link));
-      if(divider.childNodes[0].className != "removable") {
-        container.appendChild(divider);
-      }
+      const xItem = xml_doc.getElementsByTagName("item")[i];
+      parse_article(xItem, URL, feed_items)
     }
   }
   if(num_entries) {
     for(let i = 0; i < num_entries; i++) {
-      var divider = document.createElement("div");
-      divider.setAttribute("class", "feed_data")
-      const xEntry = xmlDoc.getElementsByTagName("entry")[i];
-  
-      divider.appendChild(handleItem(xEntry, name, link));
-      if(divider.childNodes[0].className != "removable") {
-        container.appendChild(divider);
+      const xEntry = xml_doc.getElementsByTagName("entry")[i];
+      parse_article(xEntry, URL, feed_items)
+    }
+  }
+  save_articles(feed_items, URL)
+  display_articles(URL)
+  add_listeners()
+}
+
+function parse_article(article, URL, feed_items) {
+  var article_title, article_link, article_description, article_published
+  for(let i = 0; i < article.childNodes.length; i++) {
+    switch (article.childNodes[i].tagName) {
+      case "title":
+        article_title = article.childNodes[i].innerHTML
+        break;
+      case "guid":
+        article_link = article.childNodes[i].innerHTML
+        break;
+      case "description":
+        article_description = article.childNodes[i].innerHTML
+        break;
+      case "pubDate":
+        article_published = article.childNodes[i].innerHTML
+        break;
+      case "link":
+        article_link = article.childNodes[i].getAttribute("href")
+        break;
+      case "published":
+        article_published = article.childNodes[i].innerHTML
+        break;
+    }
+  }
+    for(let i = 0; i < feed_items.length; i++) {
+      if(feed_items[i].url == URL) {
+        var article_item = {"title": article_title, "link": article_link, "description": article_description,
+        "published": article_published, "mark": ""}
+          feed_items[i].links.push(article_item)
+      }
+    }
+}
+
+function display_articles(link) {
+  var feed_items = JSON.parse(localStorage.getItem("rss_feeds"))
+  for(let i = 0; i < feed_items.length; i++) {
+    if(feed_items[i].url == link) {
+      for(let j = 0; j < feed_items[i].links.length; j++) {
+        container.innerHTML += "<div class=\"feed_data\">" + 
+        "<div class=\"" + feed_items[i].links[j].mark + "\">" +
+        "<p>" + feed_items[i].name + "</p>" +
+        "<button class=\"mark_read_button\" title=\"Mark Read/Unread\">" + 
+        "<img class=\"feed_button_icon\" src=\"./images/mark.png\" unselectable=\"on\"></button>" +
+        "<p class=\"feed_title\">" + feed_items[i].links[j].title + "</p>" +
+        "<a class=\"feed_guid\" target=\"_blank\" href=" + feed_items[i].links[j].link +">" + feed_items[i].links[j].link +"</a>" +
+        "<p class=\"feed_description\">" + feed_items[i].links[j].description +"</p>" +
+        "<p class=\"feed_pubDate\">" + feed_items[i].links[j].published +"</p>" +
+        "</div></div>"
       }
     }
   }
-  pull_history(link);
 }
 
-function handleItem(item, name, link) {
-  var xName = document.createElement("p");
-  xName.innerHTML = name;
-  const children = item.childNodes;
-  var mark_read_button = document.createElement("button");
-  mark_read_button.setAttribute("class", "mark_read_button");
-  var icon_mark = document.createElement("img");
-  icon_mark.setAttribute("class", "feed_button_icon");
-  icon_mark.setAttribute("src", "./images/mark.png");
-  icon_mark.setAttribute("unselectable", "on");
-  mark_read_button.appendChild(icon_mark);
-  mark_read_button.setAttribute("title", "Mark Read/Unread");
-
-  var sub_divider = document.createElement("div");
-  sub_divider.appendChild(xName);
-  for(let i = 0; i < children.length; i++) {
-    const child = children.item(i)
-    switch (child.tagName) {
-      case "title":
-        var xTitle = document.createElement("p");
-        xTitle.setAttribute("class", "feed_title");
-        xTitle.innerHTML = child.innerHTML;
-        sub_divider.appendChild(xTitle);
-        sub_divider.appendChild(mark_read_button);
-        break;
-      case "guid":
-        var xGuid = document.createElement("a");
-        xGuid.setAttribute("class", "feed_guid");
-        xGuid.setAttribute("target", "_blank");
-        xGuid.setAttribute("href", child.innerHTML);
-        xGuid.innerHTML = child.innerHTML;
-        sub_divider.appendChild(xGuid);
-        break;
-      case "description":
-        var xDescription = document.createElement("p");
-        xDescription.setAttribute("class", "feed_description");
-        xDescription.innerHTML = child.innerHTML;
-        sub_divider.appendChild(xDescription);
-        break;
-      case "pubDate":
-        var xPubDate = document.createElement("p");
-        xPubDate.setAttribute("class", "feed_pubDate");
-        xPubDate.innerHTML = child.innerHTML;
-        sub_divider.appendChild(xPubDate);
-        break;
-      case "link":
-        var xGuid = document.createElement("a");
-        xGuid.setAttribute("class", "feed_guid");
-        xGuid.setAttribute("target", "_blank");
-        xGuid.setAttribute("href", child.getAttribute("href"));
-        xGuid.innerHTML = child.getAttribute("href");
-        sub_divider.appendChild(xGuid);
-        break;
-      case "published":
-        var xPubDate = document.createElement("p");
-        xPubDate.setAttribute("class", "feed_pubDate");
-        xPubDate.innerHTML = child.innerHTML;
-        sub_divider.appendChild(xPubDate);
-        break;
-    }
-  }
-  if(localStorage[link]) {
-    if(localStorage[link].includes(sub_divider.getElementsByClassName("feed_title")[0].innerHTML)) {
-      sub_divider.remove();
-      var temp = document.createElement("div");
-      temp.setAttribute("class", "removable")
-      return temp
-    }
-  }
-  return sub_divider
-}
-
-function mark(event) {
-  var parentElement = event.target.parentElement;
-  if(parentElement.className == "read") {
-    parentElement.setAttribute("class", "unread");
-  } else {
-    parentElement.setAttribute("class", "read");
-  }
-  localStorage.setItem(event.target.link, container.innerHTML)
-}
 /* ############################################################################################### */
 
 /* DELETE FEED */
@@ -295,6 +261,10 @@ function add_listeners() {
     for(let k = 0; k < delete_buttons.length; k++) {
         delete_buttons[k].addEventListener("click", show_delete_modal);
     }
+    var mark_buttons = document.getElementsByClassName("mark_read_button");
+    for(let l = 0; l < mark_buttons.length; l++) {
+      mark_buttons[l].addEventListener("click", mark);
+    }
   }
 }
 
@@ -308,19 +278,45 @@ function save_feeds() {
   }
 }
 
-function pull_history(link) {
-  //if localStorage[link] has title that is not found in container.innerHTML, remove item from localStorage[link]
-  container.innerHTML += localStorage[link]
-
-    var mark_read_buttons = document.getElementsByClassName("mark_read_button");
-    for(let i = 0; i < mark_read_buttons.length; i++) {
-        mark_read_buttons[i].link = link
-        mark_read_buttons[i].addEventListener("click", mark);
+function save_articles(data, link) {
+  //cylce through data, if there is an entry that already exists in localstorage, change it to the localstorage item
+  for(let i = 0; i < data.length; i++) {
+    if(data[i].url == link) {
+      var feed = JSON.parse(localStorage.getItem("rss_feeds"))
+      for(let j = 0; j < feed.length; j++) {
+        if(data[i].url == feed[j].url) {
+          for(let k = 0; k < data[i].links.length; k++) {
+            for(let l = 0; l < feed[j].links.length; l++) {
+              if(feed[j].links[l].link == data[i].links[k].link) {
+                data[i].links[k].mark = feed[j].links[l].mark
+              }
+            }
+          }
+        }
+      }
     }
+  }
+  localStorage.setItem("rss_feeds", JSON.stringify(data))
 }
 
-function save_history(container) {
+function mark(event) {
+  var parentElement = event.target.parentElement;
+  if(parentElement.className == "read") {
+    parentElement.setAttribute("class", "unread");
+  } else {
+    parentElement.setAttribute("class", "read");
+  }
+  var feed_data = JSON.parse(localStorage.getItem("rss_feeds"))
+  let url = parentElement.getElementsByClassName("feed_guid")[0].href
 
+  for(let i = 0; i < feed_data.length; i++) {
+    for(let j = 0; j < feed_data[i].links.length; j++) {
+      if(feed_data[i].links[j].link == url) {
+        feed_data[i].links[j].mark = parentElement.className
+      }
+    }
+  }
+  localStorage.setItem("rss_feeds", JSON.stringify(feed_data))
 }
 /* ############################################################################################### */
 
