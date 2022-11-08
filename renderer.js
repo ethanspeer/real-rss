@@ -62,7 +62,8 @@ function addFeed () {
     "<button class=\"load_button\" title=\"Load\" name=\"" + rss_url.value + "\" value=\"" + rss_name.value + "\">" +
     "<img class=\"feed_button_icon\" src=\"./images/load.png\" unselectable=\"on\"></button>" +
     "<button class=\"delete_button\" title=\"Delete\" name=\"" + rss_name.value + "\">" +
-    "<img class=\"feed_button_icon\" src=\"./images/delete.png\" unselectable=\"on\"></button>" + "</li>",
+    "<img class=\"feed_button_icon\" src=\"./images/delete.png\" unselectable=\"on\"></button>" + 
+    "<p class=\"unread_count\" name=" + rss_url.value + "></p></li>",
     "name": rss_name.value,
     "url": rss_url.value,
   }
@@ -128,7 +129,8 @@ function parse(data, URL) {
   }
   save_articles(feed_items, URL)
   display_articles(URL)
-  add_listeners()
+  count_unread(URL)
+  mark_listeners()
 }
 
 function parse_article(article, URL, feed_items) {
@@ -158,7 +160,7 @@ function parse_article(article, URL, feed_items) {
     for(let i = 0; i < feed_items.length; i++) {
       if(feed_items[i].url == URL) {
         var article_item = {"title": article_title, "link": article_link, "description": article_description,
-        "published": article_published, "mark": ""}
+        "published": article_published, "mark": "unread"}
           feed_items[i].links.push(article_item)
       }
     }
@@ -182,6 +184,28 @@ function display_articles(link) {
       }
     }
   }
+}
+
+function count_unread(link) {
+  var num_unread = 0;
+  var feed_items = JSON.parse(localStorage.getItem("rss_feeds"))
+  for(let i = 0; i < feed_items.length; i++) {
+    if(feed_items[i].url == link) {
+      for(let j = 0; j < feed_items[i].links.length; j++) {
+        if(feed_items[i].links[j].mark == "unread") {
+          num_unread++
+        }
+      }
+      
+    }
+  }
+  if(num_unread == 0) {
+    feed_list.getElementsByClassName("unread_count")[link].innerHTML = ""
+  } else {
+    feed_list.getElementsByClassName("unread_count")[link].innerHTML = "(" + num_unread + ")"
+  }
+
+  
 }
 
 /* ############################################################################################### */
@@ -268,6 +292,13 @@ function add_listeners() {
   }
 }
 
+function mark_listeners() {
+  var mark_buttons = document.getElementsByClassName("mark_read_button");
+  for(let l = 0; l < mark_buttons.length; l++) {
+    mark_buttons[l].addEventListener("click", mark);
+  }
+}
+
 function save_feeds() {
   var feed_items = JSON.parse(localStorage.getItem("rss_feeds"))
   feed_list.innerHTML = ""
@@ -300,6 +331,7 @@ function save_articles(data, link) {
 }
 
 function mark(event) {
+  var temp_link = ""
   var parentElement = event.target.parentElement;
   if(parentElement.className == "read") {
     parentElement.setAttribute("class", "unread");
@@ -312,11 +344,13 @@ function mark(event) {
   for(let i = 0; i < feed_data.length; i++) {
     for(let j = 0; j < feed_data[i].links.length; j++) {
       if(feed_data[i].links[j].link == url) {
+        temp_link = feed_data[i].url
         feed_data[i].links[j].mark = parentElement.className
       }
     }
   }
   localStorage.setItem("rss_feeds", JSON.stringify(feed_data))
+  count_unread(temp_link)
 }
 /* ############################################################################################### */
 

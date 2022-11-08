@@ -138,10 +138,6 @@ p {
     cursor: pointer;
   }
 
-  .right {
-    text-align: right;
-  }
-
   .feed_button_icon {
     width: 10px;
     height: 10px;
@@ -158,18 +154,25 @@ p {
     left: 15px;
   }
 
-  .delete_button{
+  .delete_button {
     position: relative;
     left: 20px;
+  }
+
+  .unread_count {
+    position: relative;
+    left: 30px;
+    display: inline-block;
+    font-weight: bold;
   }
 
   .xml-container {
     width: 880px;
     border-style: solid;
     height: 200px;
-    position: relative;
+    position: absolute;
     left: 320px;
-    bottom: 90px;
+    bottom: 275px;
     overflow: hidden;
     overflow: scroll;
   }
@@ -291,4 +294,10 @@ p {
 
 .mark_read_button {
   float: right;
+}
+
+#info {
+  position: fixed;
+  bottom: 0;
+  right: 0;
 }
