@@ -11,6 +11,9 @@ const func = async () => {
   func()
 
 const add_feed_button = document.getElementById('add_feed_button');
+const load_all_button = document.getElementById('load_all_button');
+
+
 const add_feed_modal = document.getElementById('add_feed_modal');
 const delete_feed_modal = document.getElementById('delete_feed_modal');
 const add_link_button = document.getElementById('add_link_button');
@@ -24,6 +27,8 @@ function initialize() {
   add_feed_button.addEventListener('click', () => {
     add_feed_modal.style.display = "block";
   });
+
+  load_all_button.addEventListener("click", loadAll);
   
   add_link_button.addEventListener('click', () => {
     if(!(checkNameExists(rss_name.value))) {
@@ -210,6 +215,16 @@ function count_unread(link) {
 
 /* ############################################################################################### */
 
+/* LOAD ALL */
+/* ############################################################################################### */
+function loadAll() {
+  var load_buttons = feed_list.getElementsByClassName("load_button")
+  for(let i = 0; i < load_buttons.length; i++) {
+    load_buttons[i].click();
+  }
+}
+/* ############################################################################################### */
+
 /* DELETE FEED */
 /* ############################################################################################### */
 function show_delete_modal(event) {
@@ -310,7 +325,6 @@ function save_feeds() {
 }
 
 function save_articles(data, link) {
-  //cylce through data, if there is an entry that already exists in localstorage, change it to the localstorage item
   for(let i = 0; i < data.length; i++) {
     if(data[i].url == link) {
       var feed = JSON.parse(localStorage.getItem("rss_feeds"))
