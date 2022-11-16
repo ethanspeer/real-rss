@@ -209,8 +209,6 @@ function count_unread(link) {
   } else {
     feed_list.getElementsByClassName("unread_count")[link].innerHTML = "(" + num_unread + ")"
   }
-
-  
 }
 
 /* ############################################################################################### */
