@@ -62,7 +62,7 @@ function addFeed () {
   var json_feed = {
     "links": [
     ],
-    "html": "<li>" + rss_name.value + "<button class=\"edit_button\" title=\"Edit\">" +
+    "html": "<li class=\"list_item\">" + rss_name.value + "<button class=\"edit_button\" title=\"Edit\">" +
     "<img class=\"feed_button_icon\" src=\"./images/edit.png\" unselectable=\"on\"></button>" +
     "<button class=\"load_button\" title=\"Load\" name=\"" + rss_url.value + "\" value=\"" + rss_name.value + "\">" +
     "<img class=\"feed_button_icon\" src=\"./images/load.png\" unselectable=\"on\"></button>" +
