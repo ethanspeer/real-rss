@@ -220,6 +220,12 @@ function loadAll() {
   for(let i = 0; i < load_buttons.length; i++) {
     load_buttons[i].click();
   }
+
+  sortFeedsByDate()
+}
+
+function sortFeedsByDate () {
+  
 }
 /* ############################################################################################### */
 
